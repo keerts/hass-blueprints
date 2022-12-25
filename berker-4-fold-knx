@@ -1,0 +1,133 @@
+blueprint:
+  name: Light control
+  description: This automation matches the state of a button with a light. It also takes care of the feedback light.
+  domain: automation
+  input:
+    light:
+      name: Light
+      selector:
+        entity:
+          domain: light
+    button:
+      name: Button
+      selector:
+        entity:
+          domain: switch
+    button_feedback:
+      name: Button feedback led
+      selector:
+        entity:
+          domain: switch
+
+trigger:
+- platform: state
+  entity_id: !input light
+- platform: state
+  entity_id: !input button
+condition: []
+action:
+- choose:
+  - conditions:
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: !input light
+        state: 'on'
+      - condition: state
+        entity_id: !input button
+        state: 'on'
+    sequence:
+    - service: switch.turn_on
+      data: {}
+      entity_id: !input button_feedback
+  - conditions:
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: !input light
+        state: 'off'
+      - condition: state
+        entity_id: !input button
+        state: 'off'
+    sequence:
+    - service: switch.turn_off
+      data: {}
+      entity_id: !input button_feedback
+  - conditions:
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: !input light
+        state: 'on'
+      - condition: state
+        entity_id: !input button
+        state: 'off'
+      - condition: state
+        entity_id: !input button_feedback
+        state: 'on'
+    sequence:
+    - service: light.turn_off
+      data: {}
+      entity_id: !input light
+    - service: switch.turn_off
+      data: {}
+      entity_id: !input button_feedback
+  - conditions:
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: !input light
+        state: 'off'
+      - condition: state
+        entity_id: !input button
+        state: 'on'
+      - condition: state
+        entity_id: !input button_feedback
+        state: 'off'
+    sequence:
+    - service: light.turn_on
+      data: {}
+      entity_id: !input light
+    - service: switch.turn_on
+      data: {}
+      entity_id: !input button_feedback
+  - conditions:
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: !input light
+        state: 'on'
+      - condition: state
+        entity_id: !input button
+        state: 'off'
+      - condition: state
+        entity_id: !input button_feedback
+        state: 'off'
+    sequence:
+    - service: switch.turn_on
+      data: {}
+      entity_id: !input button
+    - service: switch.turn_on
+      data: {}
+      entity_id: !input button_feedback
+  - conditions:
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: !input light
+        state: 'off'
+      - condition: state
+        entity_id: !input button
+        state: 'on'
+      - condition: state
+        entity_id: !input button_feedback
+        state: 'on'
+    sequence:
+    - service: switch.turn_off
+      data: {}
+      entity_id: !input button
+    - service: switch.turn_off
+      data: {}
+      entity_id: !input button_feedback
+  default: []
+mode: single
